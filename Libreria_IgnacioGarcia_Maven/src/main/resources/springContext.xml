@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:c="http://www.springframework.org/schema/c"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.3.xsd">
+	
+	<!-- Bean de tipo Autor con desambiguación por nombre y atributo autowire-candidate a falso para que lo ignore el autowire-->
+	<bean id="isabel" class="com.grupoatrium.modelo.Autor" autowire-candidate="false">
+		<constructor-arg name="nombre" value="Isabel Allende"/>
+		<constructor-arg name="nacionalidad" value="Chile"/>
+		<constructor-arg name="comentarios" value="Premio Nacional de Literatura de su país en 2010"/>
+	</bean>
+
+	<!-- Desambiguación por posición -->
+	<bean id="jkrowling" class="com.grupoatrium.modelo.Autor">
+		<constructor-arg index="0" value="J.K.Rowling"/>
+		<constructor-arg index="1" value="Gran Breataña"/>
+		<constructor-arg index="2" value="Escritora y productora de cine británica"/>
+	</bean>
+	
+	<!-- Desambiguación por tipo en el constructor (aunque en este caso son todos iguales..) -->
+	<bean id="paula" class="com.grupoatrium.modelo.Autor">
+		<constructor-arg type="java.lang.String" value="Paula Hawkins"/>
+		<constructor-arg type="java.lang.String" value="Zimbabue"/>
+		<constructor-arg type="java.lang.String" value="Nacionalizada británica"/>
+	</bean>
+	
+	<!-- Bean de tipo Autor por propiedades -->
+	<bean id="john" class="com.grupoatrium.modelo.Autor">
+		<property name="nombre" value="John Boyne"/>
+		<property name="nacionalidad" value="Irlanda"/>
+		<property name="comentarios" value="Escritor irlandés nacido en Dublín el 30 de abril de 1971"/>
+	</bean>
+	
+	<!-- Bean de tipo Autor con espacio de nombres 'p' -->
+	<bean id="mario" class="com.grupoatrium.modelo.Autor" p:nombre="Mario Vargas Llosa" p:nacionalidad="Perú" p:comentarios="Adquirió la nacionalidad española en 1993"/>
+	
+	<!-- Bean anónimo de tipo Autor inyectando propiedades con espacion de nombres 'c'-->
+	<bean class="com.grupoatrium.modelo.Autor" c:nombre="Carlos Ruiz Zafón" c:nacionalidad="España" c:comentarios="Autor de varios libros superventas"/>
+	
+	<!-- Bean de tipo Direccion abstracto-->
+	<bean id="barcelona" class="com.grupoatrium.modelo.Direccion" abstract="true">
+		<property name="poblacion" value="Barcelona"/>
+		<property name="provincia" value="Barcelona"/>
+	</bean>
+	
+	<!-- Beans de tipo Direccion que heredan del bean con id 'barcelona' -->
+	<bean id="barcelona1" class="com.grupoatrium.modelo.Direccion" parent="barcelona" p:calle="Avenida Diagonal" p:cp="11202" p:numero="15"/>
+	<bean id="barcelona2" class="com.grupoatrium.modelo.Direccion" parent="barcelona" p:calle="Carrer d'Aragó" p:cp="11001" p:numero="37"/>
+	
+	<!-- Bean de tipo Editorial autowire-candidate a falso para que lo ignore el autowire -->
+	<bean id="planeta" class="com.grupoatrium.modelo.Editorial" p:nombre="Editorial Planeta" p:nif="00000000A" p:direccion-ref="barcelona1" autowire-candidate="false"/>
+	
+	<!-- Bean de tipo Editorial -->
+	<bean id="oceano" class="com.grupoatrium.modelo.Editorial" p:nombre="Grupo Océano" p:nif="00000000B" p:direccion-ref="barcelona2"/>
+	
+	<!-- Bean de tipo Libro inyectado propiedad de tipo lista -->
+	<bean id="libro1" class="com.grupoatrium.modelo.Libro">
+		<!-- Inyección de propiedad de tipo lista -->
+		<property name="autores">
+			<list>
+				<!-- referencia a bean anónimo -->
+				<ref bean="com.grupoatrium.modelo.Autor#0"/> 
+				<ref bean="john"/>
+				<!-- Bean interno de tipo Autor -->
+				<bean class="com.grupoatrium.modelo.Autor">
+					<constructor-arg index="0" value="Paulo Cohelo"/>
+					<constructor-arg index="1" value="Brasil"/>
+					<constructor-arg index="2" value="Novelista, dramaturgo y letrista brasileño"/>
+				</bean>
+			</list>
+		</property>
+		<property name="descripcion" value="Narra una historia de amor y misterio en las calles de Barcelona"/>
+		<property name="editorial" ref="planeta"/>
+		<property name="isbn" value="abc1234"/>
+		<property name="precio" value="25.40"/>
+		<property name="publicacion" value="6"/>
+		<property name="titulo" value="La sombra del viento"/>
+	</bean>
+
+	<!-- Bean con lista de autores utilizando el espacio de nombres "util" -->
+	<util:list id="autores" value-type="com.grupoatrium.modelo.Autor">
+		<ref bean="isabel"/>
+		<ref bean="john"/>
+		<bean class="com.grupoatrium.modelo.Autor">
+			<property name="nombre" value="Carlos"/>
+			<property name="nacionalidad" value="España"/>
+			<property name="comentarios" value="Inventado"/>
+		</bean>
+	</util:list>
+
+	<!-- Bean de tipo Libro utilizando autowire para inyeccción de dependencias -->
+	<bean id="libro2" class="com.grupoatrium.modelo.Libro" autowire="byType" p:titulo="El niño del pijama de rayas" p:descripcion="Holocausto" p:isbn="345ABC" p:precio="15.60" p:publicacion="8"/>
+
+	<!-- Bean de tipo Libro utilizando desambiguacion por tipo en el constructor (este tiene tipos diferentes) -->
+	<bean id="libro3" class="com.grupoatrium.modelo.Libro">
+		<constructor-arg type="java.lang.String" value="La chica del tren"/>
+		<constructor-arg type="java.lang.String" value="Novela de intriga y misterio"/>
+		<constructor-arg type="java.util.List" ref="paula"/>
+		<constructor-arg type="com.grupoatrium.modelo.Editorial" ref="oceano"/>
+		<constructor-arg type="int" value="5"/>
+		<constructor-arg type="double" value="14.25"/>
+		<constructor-arg type="java.lang.String" value="abc456"/>
+	</bean>
+
+	<!-- Carga de propiedades utilizando placeholderPrefix para diferenciar clave iguales en diferentes archivos de properties -->
+	<bean id="prodPropertyGroup" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+  		<property name="locations" value="classpath:config/data-source.properties"/>
+   		<property name="placeholderPrefix" value="${dbprod."/>
+	</bean>
+
+	<bean id="testPropertyGroup" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+  		<property name="locations" value="classpath:config/data-source-test.properties"/>
+   		<property name="placeholderPrefix" value="${dbtest."/>
+	</bean>
+
+	<!-- Bean de tipo ConnecitonMgr dando valor a sus atributos con los datos del fichero properties cargado anteriormente -->
+	<!-- Dado que la clase tiene constructor privado y un método estático para su instancia, se utiliza el factory-method -->
+	<!-- Aplicamos parte de las propiedades de tipo produccion y parte de tipo test para comprobar que se inyectan correctamente -->
+	<bean id="connectionMgr" class="com.grupoatrium.persistencia.impl.ConnectionMgr" factory-method="getInstance">
+		<property name="driver" value="${dbprod.driver}" />
+		<property name="url" value="${dbprod.url}" />
+		<property name="usuario" value="${dbtest.usuario}" />
+		<property name="password" value="${dbtest.password}" />
+	</bean>
+	
+	<!-- Bean abstracto con la propiedad connectionMgr cargada -->
+	<bean id="abstractDAO" abstract="true">
+		<property name="connMgr" ref="connectionMgr"/>
+	</bean>
+	
+	<!-- Beans de los DAO que heredan del bean abtracto anterior -->
+	<bean id="librosDAO" parent="abstractDAO" class="com.grupoatrium.persistencia.impl.LibrosDAO"/>
+	<!-- Se marca como prototype para que instancie objetos nuevos en vez de hacer singleton -->
+	<bean id="editorialesDAO" parent="abstractDAO" class="com.grupoatrium.persistencia.impl.EditorialesDAO" scope="prototype"/>
+
+</beans>
