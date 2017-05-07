@@ -3,11 +3,13 @@
   <groupId>com.grupoatrium.maven</groupId>
   <artifactId>libreria_ignacio_garcia</artifactId>
   <version>1.0.0</version>
+  <!-- Indicamos el proyecto padre para que se hereden las dependencias -->
   <parent>
   	<groupId>com.grupoatrium.maven</groupId>
   	<artifactId>maven-parent</artifactId>
   	<version>1.0.0</version>
   </parent>
+  <!-- Se define la estrategia de construcción del proyecto -->
   <build>
     <plugins>
       <plugin>

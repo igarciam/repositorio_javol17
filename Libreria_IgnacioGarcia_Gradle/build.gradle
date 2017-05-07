@@ -16,8 +16,8 @@ repositories {
     jcenter()
 }
 
+// Se definen las dependencias del proyecto, en este caso solo es necesario spring-context
 dependencies {
     compile group: 'org.springframework', name: 'spring-context', version: '4.3.7.RELEASE'
-    compile group: 'org.springframework', name: 'spring-core', version: '4.3.7.RELEASE'
 }
 

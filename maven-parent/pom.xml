@@ -5,16 +5,15 @@
   <version>1.0.0</version>
   <packaging>pom</packaging>
   
+  <!-- Definimos las propiedades -->
   <properties>
+  	<!-- Definimos la versión de spring que se va a utilizar -->
   	<spring.version>4.3.7.RELEASE</spring.version>
   </properties>
   
+  <!-- Añadimos las dependencias necesarias para el proyecto.
+  	   En este caso solo necesitamos spring-context, que será utilizado por el proyecto hijo -->
   <dependencies>
-  	<dependency>
-  		<groupId>org.springframework</groupId>
-  		<artifactId>spring-core</artifactId>
-  		<version>${spring.version}</version>
-  	</dependency>
   	<dependency>
   		<groupId>org.springframework</groupId>
   		<artifactId>spring-context</artifactId>
